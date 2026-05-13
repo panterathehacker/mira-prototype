@@ -71,7 +71,7 @@ export default function OnboardingFlow() {
 
   useEffect(() => {
     if (step === "loading") {
-      const t = setTimeout(() => setStep("reveal"), 6500);
+      const t = setTimeout(() => setStep("reveal"), 9000);
       return () => clearTimeout(t);
     }
   }, [step]);
@@ -304,7 +304,10 @@ function Q2Screen({
       </p>
       <p className="font-serif text-muted" style={{ fontSize: "1.5rem", lineHeight: 1.4 }}>
         What&apos;s a decision from the last year you&apos;re still thinking about?
-        Win or loss, doesn&apos;t matter. This is how I start learning what matters to you.
+        Win or loss, doesn&apos;t matter.
+      </p>
+      <p className="font-serif text-muted-light" style={{ fontSize: "1rem", lineHeight: 1.5 }}>
+        This is how I start learning what matters to you.
       </p>
 
       <div className="flex flex-col gap-4 mt-2">
@@ -380,7 +383,7 @@ function LoadingScreen() {
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: visible >= 3 ? 1 : 0 }}
-        transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
         className="font-serif italic text-muted-light"
         style={{ fontSize: "1rem", lineHeight: 1.5, marginTop: "0.5rem" }}
       >
@@ -423,10 +426,14 @@ function RevealScreen({ onStart }: { onStart: () => void }) {
       transition={{ duration: 0.6, ease: "easeInOut" }}
       className="flex flex-col gap-10"
     >
-      <p className="font-serif text-subhead text-muted">
-        Here&apos;s what I&apos;ve got so far. I&apos;ll keep working on it as we go.{" "}
-        <span className="text-muted-light">You can edit this later.</span>
-      </p>
+      <div className="flex flex-col gap-2">
+        <p className="font-serif text-subhead text-muted">
+          Here&apos;s what I&apos;ve got so far. I&apos;ll keep working on it as we go.
+        </p>
+        <p className="font-serif text-subhead text-muted-light">
+          You can edit this later. The more we work together, the more I&apos;ll refine it.
+        </p>
+      </div>
 
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-3">

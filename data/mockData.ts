@@ -221,17 +221,17 @@ export const cards: Card[] = [
 
 export const journal: Journal = {
   thesis:
-    "David is building a portfolio around a narrower thesis than he describes publicly. His real bet is on products that deepen a pre-existing ritual the user already practices — journaling, taste-making, sharing — using AI to make the user more themselves, not more efficient. He's skeptical of pure efficiency plays and consistently passes on them, even when the numbers look good. He's drawn to founders who can articulate a behavioral wedge, even if the moat isn't visible yet.",
+    "Your real thesis is narrower than what you say publicly. You're betting on products that deepen a ritual the user already practices: journaling, taste-making, sharing. AI that makes the user more themselves, not more efficient. You pass on pure efficiency plays consistently, even when the numbers look good. You're drawn to founders who can articulate a behavioral wedge, even if the moat isn't visible yet.",
   voicePhrases: userProfile.voicePhrases,
   figuringOut: [
     {
-      text: "Whether the B2B gap is an active choice or a sourcing issue. He's referenced enterprise twice on calls but every check this year has been consumer.",
+      text: "Whether the B2B gap is an active choice or a sourcing issue. You've referenced enterprise twice on calls but every check this year has been consumer.",
     },
     {
-      text: "Why he uses \"ritual\" and \"wedge\" interchangeably sometimes but not others. There's a distinction in there I'm missing.",
+      text: "Why you use \"ritual\" and \"wedge\" interchangeably sometimes but not others. There's a distinction in there I'm still mapping.",
     },
     {
-      text: "Whether his pass on Verse was a thesis pass or a founder pass. The note says thesis but the language is uncharacteristically curt.",
+      text: "Whether your pass on Verse was a thesis pass or a founder pass. The note says thesis but the language is uncharacteristically curt.",
     },
   ],
 };
