@@ -5,7 +5,14 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { journal } from "@/data/mockData";
 
+type Q1State = 0 | 1 | 2 | 3; // 0=line1 alone, 1=line2 alone, 2=line3 alone, 3=all + form
 type Step = "q1" | "q2" | "loading" | "reveal";
+
+const LINE1 = "Hey there, I'm Mira.";
+const LINE2 = "Before we work together, I want to learn how you think.";
+const LINE3 = "Paste something you've written for work lately. Anything will do, as long as it's yours.";
+
+const FADE_DURATION = 0.5;
 
 export default function OnboardingFlow() {
   const [step, setStep] = useState<Step>("q1");
@@ -31,19 +38,21 @@ export default function OnboardingFlow() {
   }, [step]);
 
   return (
-    <div className="min-h-screen bg-paper flex items-center justify-center px-6">
-      <AnimatePresence mode="wait">
-        {step === "q1" && (
-          <Q1Screen key="q1" value={q1} onChange={setQ1} onContinue={handleQ1} />
-        )}
-        {step === "q2" && (
-          <Q2Screen key="q2" value={q2} onChange={setQ2} onContinue={handleQ2} />
-        )}
-        {step === "loading" && <LoadingScreen key="loading" />}
-        {step === "reveal" && (
-          <RevealScreen key="reveal" onStart={() => router.push("/")} />
-        )}
-      </AnimatePresence>
+    <div className="min-h-screen bg-paper flex items-center justify-center px-12">
+      <div className="w-full max-w-[680px]">
+        <AnimatePresence mode="wait">
+          {step === "q1" && (
+            <Q1Screen key="q1" value={q1} onChange={setQ1} onContinue={handleQ1} />
+          )}
+          {step === "q2" && (
+            <Q2Screen key="q2" value={q2} onChange={setQ2} onContinue={handleQ2} />
+          )}
+          {step === "loading" && <LoadingScreen key="loading" />}
+          {step === "reveal" && (
+            <RevealScreen key="reveal" onStart={() => router.push("/")} />
+          )}
+        </AnimatePresence>
+      </div>
 
       <button
         onClick={() => router.push("/")}
@@ -64,60 +73,83 @@ function Q1Screen({
   onChange: (v: string) => void;
   onContinue: () => void;
 }) {
-  const [subtitleVisible, setSubtitleVisible] = useState(false);
+  const [q1State, setQ1State] = useState<Q1State>(0);
 
   useEffect(() => {
-    const t = setTimeout(() => setSubtitleVisible(true), 1500);
+    const delays: Record<Q1State, number | null> = {
+      0: 3000,
+      1: 2500,
+      2: 2500,
+      3: null,
+    };
+    const delay = delays[q1State];
+    if (delay === null) return;
+    const t = setTimeout(
+      () => setQ1State((prev) => (prev < 3 ? ((prev + 1) as Q1State) : prev)),
+      delay
+    );
     return () => clearTimeout(t);
-  }, []);
+  }, [q1State]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
-      className="w-full max-w-[600px] flex flex-col gap-8"
-    >
-      <h1 className="font-serif text-header-mira font-medium text-ink">
-        Hey there, I&apos;m Mira.
-      </h1>
+    <AnimatePresence mode="wait">
+      {q1State === 0 && (
+        <motion.div key="s0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: FADE_DURATION, ease: "easeInOut" }}>
+          <p className="font-serif font-medium text-ink" style={{ fontSize: "3.75rem", lineHeight: 1.1, letterSpacing: "-0.02em" }}>
+            {LINE1}
+          </p>
+        </motion.div>
+      )}
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: subtitleVisible ? 1 : 0 }}
-        transition={{ duration: 0.6 }}
-        className="flex flex-col gap-6"
-      >
-        <p className="font-serif text-body text-ink">
-          Before we work together, I want to learn how you think.
-        </p>
-        <p className="font-serif text-body text-muted">
-          Paste a memo, deal note, or essay you&apos;ve written in the last
-          year. Anything will do, as long as it&apos;s yours.
-        </p>
+      {q1State === 1 && (
+        <motion.div key="s1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: FADE_DURATION, ease: "easeInOut" }}>
+          <p className="font-serif font-medium text-ink" style={{ fontSize: "2.25rem", lineHeight: 1.2, letterSpacing: "-0.015em" }}>
+            {LINE2}
+          </p>
+        </motion.div>
+      )}
 
-        <textarea
-          autoFocus
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder=""
-          rows={8}
-          className="w-full font-serif text-body text-ink bg-transparent border-b border-solid border-hairline outline-none resize-none placeholder:text-muted-light py-3"
-        />
+      {q1State === 2 && (
+        <motion.div key="s2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: FADE_DURATION, ease: "easeInOut" }}>
+          <p className="font-serif text-ink" style={{ fontSize: "1.5rem", lineHeight: 1.4, letterSpacing: "-0.01em" }}>
+            {LINE3}
+          </p>
+        </motion.div>
+      )}
 
-        <div className="flex justify-between items-center">
-          <span />
-          <button
-            onClick={onContinue}
-            disabled={!value.trim()}
-            className="font-sans text-body text-ink disabled:text-muted-light hover:underline underline-offset-4 transition-all duration-150 disabled:cursor-not-allowed"
-          >
-            Continue →
-          </button>
-        </div>
-      </motion.div>
-    </motion.div>
+      {q1State === 3 && (
+        <motion.div key="s3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: FADE_DURATION, ease: "easeInOut" }} className="flex flex-col gap-6">
+          <p className="font-serif font-medium text-ink" style={{ fontSize: "3.75rem", lineHeight: 1.1, letterSpacing: "-0.02em" }}>
+            {LINE1}
+          </p>
+          <p className="font-serif font-medium text-ink" style={{ fontSize: "2.25rem", lineHeight: 1.2, letterSpacing: "-0.015em" }}>
+            {LINE2}
+          </p>
+          <p className="font-serif text-muted" style={{ fontSize: "1.5rem", lineHeight: 1.4, letterSpacing: "-0.01em" }}>
+            {LINE3}
+          </p>
+
+          <div className="flex flex-col gap-4 mt-4">
+            <textarea
+              autoFocus
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+              rows={6}
+              className="w-full font-serif text-body text-ink bg-transparent border-b border-solid border-hairline outline-none resize-none placeholder:text-muted-light py-3"
+            />
+            <div className="flex justify-end">
+              <button
+                onClick={onContinue}
+                disabled={!value.trim()}
+                className="font-sans text-body text-ink disabled:text-muted-light hover:underline underline-offset-4 transition-all duration-150 disabled:cursor-not-allowed"
+              >
+                Continue →
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
@@ -131,24 +163,16 @@ function Q2Screen({
   onContinue: () => void;
 }) {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
-      className="w-full max-w-[600px] flex flex-col gap-8"
-    >
-      <h1 className="font-serif text-header-mira font-medium text-ink">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: FADE_DURATION, ease: "easeInOut" }} className="flex flex-col gap-6">
+      <p className="font-serif font-medium text-ink" style={{ fontSize: "2.25rem", lineHeight: 1.2, letterSpacing: "-0.015em" }}>
         One more.
-      </h1>
+      </p>
+      <p className="font-serif text-muted" style={{ fontSize: "1.5rem", lineHeight: 1.4 }}>
+        What&apos;s a decision from the last year you&apos;re still thinking about?
+        Win or loss, doesn&apos;t matter. A sentence is fine; a paragraph is better.
+      </p>
 
-      <div className="flex flex-col gap-6">
-        <p className="font-serif text-body text-muted">
-          What&apos;s a decision from the last year you&apos;re still thinking
-          about? Win or loss, doesn&apos;t matter. A sentence is fine; a
-          paragraph is better.
-        </p>
-
+      <div className="flex flex-col gap-4 mt-4">
         <textarea
           autoFocus
           value={value}
@@ -156,7 +180,6 @@ function Q2Screen({
           rows={6}
           className="w-full font-serif text-body text-ink bg-transparent border-b border-solid border-hairline outline-none resize-none placeholder:text-muted-light py-3"
         />
-
         <div className="flex justify-end">
           <button
             onClick={onContinue}
@@ -173,38 +196,27 @@ function Q2Screen({
 
 function LoadingScreen() {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
-      className="flex flex-col items-center gap-4"
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: FADE_DURATION, ease: "easeInOut" }} className="flex flex-col gap-4">
       <p className="font-serif text-subhead text-muted">
         Got it. Give me a few seconds.
       </p>
-      <motion.span
+      <motion.p
         animate={{ opacity: [1, 0.4, 1] }}
         transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-        className="font-serif text-header-mira font-medium text-ink"
+        className="font-serif font-medium text-ink"
+        style={{ fontSize: "3.75rem", lineHeight: 1.1, letterSpacing: "-0.02em" }}
       >
         Mira
-      </motion.span>
+      </motion.p>
     </motion.div>
   );
 }
 
 function RevealScreen({ onStart }: { onStart: () => void }) {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.6 }}
-      className="w-full max-w-[600px] flex flex-col gap-10"
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: FADE_DURATION, ease: "easeInOut" }} className="flex flex-col gap-10">
       <p className="font-serif text-subhead text-muted">
-        Here&apos;s what I&apos;ve got so far. I&apos;ll keep working on it as
-        we go.
+        Here&apos;s what I&apos;ve got so far. I&apos;ll keep working on it as we go.
       </p>
 
       <div className="flex flex-col gap-8">
