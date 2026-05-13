@@ -30,3 +30,76 @@
 - David needs to source `chime.mp3` and drop it in `/public/sounds/`
 - David needs to create GitHub repo and provide remote URL to link and push
 - Phase 1 begins next: static home screen with all five cards
+
+---
+
+## Session 2 — 2026-05-12
+
+**Worked on:** Phases 1, 2, 3 — Home screen, animations, push back
+
+**Built:**
+- `components/home/Header.tsx` — Mira pulse animation (opacity 1→0.65→1, 2.5s infinite), date display, journal toggle, variant dropdown trigger
+- `components/home/SubHeader.tsx` — static tagline
+- `components/home/CardColumn.tsx` — card list, chime logic (Audio, volume 0.3, play once on first sentence)
+- `components/home/Card.tsx` — motion.article with whileHover lift, AlmostSaid integration, PushBackInput (inline), action buttons with underline motion variant
+- `components/home/CardComposition.tsx` — sentence-by-sentence reveal (SENTENCE_GAP 600ms, CARD_GAP 1200ms), scroll snap to reveal all, compositionKey re-trigger
+- `components/home/AlmostSaid.tsx` — AnimatePresence hover reveal
+- `components/home/KeyboardShortcuts.tsx` — R (replay), J (journal toggle), V (variant), O (onboarding nav)
+- `app/onboarding/components/OnboardingFlow.tsx` v1 — Q1 3-state sequence, Q2, LoadingScreen, RevealScreen
+- Git repo set up, GitHub push via HTTPS (SSH key not configured; macOS keychain handled auth)
+- `public/sounds/chime.mp3` dropped in by David
+
+**Design changes from PRD defaults:**
+- Accent: terracotta `#C26B4A` → amber-gold `#8B6914` (terracotta too Claude-like)
+- Hairline: `#E8E6E0` → `#C8C4BC` (card separation invisible on cream bg)
+- Body text: 18px → 16px / 1.65 line-height (18px felt too dense)
+- Button text: removed brackets from action labels (looked code-like)
+
+**Stuck on / had to force:**
+- TypeScript error spreading `const fadeProps` object onto motion.div — fixed by inlining props directly
+- `require()` inside component body for pushBackResponses — fixed with static ES import
+- SSH push failed; switched remote to HTTPS
+
+---
+
+## Session 3 — 2026-05-12
+
+**Worked on:** Phase 6 (onboarding) — full polish pass
+
+**Built / changed:**
+- `extractText()` in OnboardingFlow — PDF via pdfjs-dist (worker at `/public/pdf.worker.min.mjs`), DOCX via mammoth, plain text via FileReader
+- File input accepts `.txt`, `.md`, `.pdf`, `.docx`
+- Button style iterated three times: boxy outline → plain text link → soft warm-fill (`bg-[#EDEAE4]`, no border)
+- LoadingScreen redesigned: 3 lines at decreasing sizes, partnership footer fades in after line 3
+- Loading line timings: 0 / 1000 / 2200ms; total duration 7s
+- Q2 screen: each of 3 lines + textarea stagger in independently (0.5s / 2.5s / 3.2s / 3.9s)
+- RevealScreen: header at 1.75rem medium, subheader at 1rem muted-light
+- `journal.thesis` rewritten: second person, no em-dashes
+- `journal.figuringOut` items: third person → second person throughout
+- Copy updates throughout: partnership framing on Q2 and reveal
+
+**Copy finalized:**
+- LINE1: "Hey there, I'm Mira." (1.5s hold)
+- LINE2: "Before we work together, I want to learn how you think." (2.5s hold)
+- LINE3: "Paste something you've written for work lately. Anything will do, as long as it's yours."
+- Q2 footer: "This is how I'll start learning what matters to you. The more we work together, the more I'll refine this."
+- Loading footer: "The longer we work together, the sharper this gets."
+- Reveal header: "Here's what I've got so far. I'll keep working on it as we go."
+- Reveal subheader: "You can edit this later but the more we work together, the more I'll refine it myself."
+
+**Status of all phases:**
+- Phase 0: DONE
+- Phase 1: DONE
+- Phase 2: DONE
+- Phase 3: DONE (Push Back wired, journal updates working)
+- Phase 4: NOT STARTED (Journal panel — JournalPanel, ThesisSection, VoiceSection, FiguringOutSection)
+- Phase 5: NOT STARTED (Variant dropdown — VariantDropdown.tsx)
+- Phase 6: DONE (Onboarding — well polished)
+- Phase 7: In progress (polish ongoing; full demo run-through needed)
+- Phase 8: NOT STARTED (Vercel deploy, BUILD_SUMMARY.md, submission tag)
+
+**Next session priorities:**
+1. Phase 4: Journal panel (J key opens it; shows thesis, voice phrases, figuring out)
+2. Phase 5: Variant dropdown (V key / clicking "Mira")
+3. Phase 7: Full demo run-through, timing tuning
+4. Phase 8: Deploy to Vercel, write BUILD_SUMMARY.md
