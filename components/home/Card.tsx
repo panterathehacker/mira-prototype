@@ -77,27 +77,27 @@ export default function Card({
       )}
 
       {storeCard.pushBackResponse && (
-        <div className="mt-4 pl-4 border-l-2 border-solid border-accent">
-          <span className="font-sans text-meta text-accent">Updated: </span>
+        <div className="mt-3 pl-4 border-l-2 border-solid border-accent">
+          <span className="font-sans text-meta text-accent tracking-wide">Updated: </span>
           <span className="font-serif text-body text-ink">{storeCard.pushBackResponse}</span>
         </div>
       )}
 
       <p className="font-sans italic text-meta text-muted mt-6">{card.footer}</p>
 
-      <div className="flex items-center gap-6 mt-4">
-        {card.actions.map((action) => (
+      <div className="flex items-center mt-5" style={{ gap: "1.5rem" }}>
+        {card.actions.map((action, i) => (
           <motion.button
             key={action}
             whileHover="hover"
             onClick={() => handleAction(action)}
-            className="font-sans text-meta text-muted hover:text-ink transition-colors duration-150 bg-transparent border-none p-0 cursor-pointer relative"
+            className="font-sans text-meta text-muted hover:text-ink transition-colors duration-150 bg-transparent border-none p-0 cursor-pointer relative tracking-wide"
           >
-            [{action}]
+            {action}
             <motion.span
               variants={{ hover: { width: "100%" }, initial: { width: 0 } }}
               initial="initial"
-              className="absolute bottom-0 left-0 h-px bg-ink"
+              className="absolute bottom-[-1px] left-0 h-px bg-ink"
               transition={{ duration: 0.2, ease: "easeOut" }}
             />
           </motion.button>
