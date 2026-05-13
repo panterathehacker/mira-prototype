@@ -308,15 +308,15 @@ function Q2Screen({
       <motion.p {...fade(0.5)} className="font-serif font-medium text-ink" style={{ fontSize: "2.25rem", lineHeight: 1.2, letterSpacing: "-0.015em" }}>
         One more thing.
       </motion.p>
-      <motion.p {...fade(1.5)} className="font-serif text-muted" style={{ fontSize: "1.5rem", lineHeight: 1.4 }}>
+      <motion.p {...fade(2.5)} className="font-serif text-muted" style={{ fontSize: "1.5rem", lineHeight: 1.4 }}>
         What&apos;s a decision from the last year you&apos;re still thinking about?
         Win or loss, doesn&apos;t matter.
       </motion.p>
-      <motion.p {...fade(2.2)} className="font-serif text-muted-light" style={{ fontSize: "1rem", lineHeight: 1.5 }}>
+      <motion.p {...fade(3.2)} className="font-serif text-muted-light" style={{ fontSize: "1rem", lineHeight: 1.5 }}>
         This is how I&apos;ll start learning what matters to you. The more we work together, the more I&apos;ll refine this.
       </motion.p>
 
-      <motion.div {...fade(2.9)} className="flex flex-col gap-4 mt-2">
+      <motion.div {...fade(3.9)} className="flex flex-col gap-4 mt-2">
         <textarea
           autoFocus
           value={value}
