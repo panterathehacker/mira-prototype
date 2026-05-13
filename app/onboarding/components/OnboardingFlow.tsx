@@ -71,7 +71,7 @@ export default function OnboardingFlow() {
 
   useEffect(() => {
     if (step === "loading") {
-      const t = setTimeout(() => setStep("reveal"), 9000);
+      const t = setTimeout(() => setStep("reveal"), 7000);
       return () => clearTimeout(t);
     }
   }, [step]);
@@ -171,7 +171,7 @@ function Q1Screen({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const delays: (number | null)[] = [2000, 2500, 2500, null];
+    const delays: (number | null)[] = [1500, 2500, 2500, null];
     const delay = delays[q1State];
     if (delay === null) return;
     const t = setTimeout(
@@ -307,7 +307,7 @@ function Q2Screen({
         Win or loss, doesn&apos;t matter.
       </p>
       <p className="font-serif text-muted-light" style={{ fontSize: "1rem", lineHeight: 1.5 }}>
-        This is how I start learning what matters to you.
+        This is how I&apos;ll start learning what matters to you. The more we work together, the more I&apos;ll refine this.
       </p>
 
       <div className="flex flex-col gap-4 mt-2">
@@ -351,7 +351,7 @@ function LoadingScreen() {
   const [visible, setVisible] = useState(0);
 
   useEffect(() => {
-    const timings = [0, 1800, 3600];
+    const timings = [0, 1000, 2200];
     const timers = timings.map((delay, i) =>
       setTimeout(() => setVisible((v) => Math.max(v, i + 1)), delay)
     );
@@ -426,11 +426,11 @@ function RevealScreen({ onStart }: { onStart: () => void }) {
       transition={{ duration: 0.6, ease: "easeInOut" }}
       className="flex flex-col gap-10"
     >
-      <div className="flex flex-col gap-2">
-        <p className="font-serif text-subhead text-muted">
+      <div className="flex flex-col gap-3">
+        <p className="font-serif font-medium text-muted" style={{ fontSize: "1.75rem", lineHeight: 1.25, letterSpacing: "-0.015em" }}>
           Here&apos;s what I&apos;ve got so far. I&apos;ll keep working on it as we go.
         </p>
-        <p className="font-serif text-subhead text-muted-light">
+        <p className="font-serif text-muted-light" style={{ fontSize: "1rem", lineHeight: 1.5 }}>
           You can edit this later. The more we work together, the more I&apos;ll refine it.
         </p>
       </div>
