@@ -8,9 +8,9 @@ import { journal } from "@/data/mockData";
 type Q1State = 0 | 1 | 2 | 3;
 type Step = "q1" | "q2" | "loading" | "reveal";
 
-const LINE1 = "I'm Mira.";
-const LINE2 = "I'm not a tool you open when you need something — I'm an investment partner who keeps working between sessions. I watch your decisions, learn your patterns, and get sharper at backing you over time.";
-const LINE3 = "Before we can do that, I need to understand how you think. Paste something you've written for work.";
+const LINE1 = "Hey there, I'm Mira.";
+const LINE2 = "Before we work together, I want to learn how you think.";
+const LINE3 = "Paste something you've written for work lately. Anything will do, as long as it's yours.";
 
 // ─── Text extraction ──────────────────────────────────────────────────────────
 
@@ -121,7 +121,7 @@ export default function OnboardingFlow() {
   );
 }
 
-// ─── Shared upload action link ────────────────────────────────────────────────
+// ─── Shared upload button ─────────────────────────────────────────────────────
 
 function ActionLink({
   onClick,
@@ -142,11 +142,11 @@ function ActionLink({
       disabled={disabled || dimmed}
       title={title}
       className={`
-        font-sans text-meta transition-colors duration-150 bg-transparent border-none p-0
+        font-sans text-meta px-3 py-1.5 rounded-sm transition-all duration-150 border-none
         ${
           dimmed || disabled
-            ? "text-muted-light cursor-not-allowed"
-            : "text-muted hover:text-ink cursor-pointer"
+            ? "bg-[#F0EDE8] text-muted-light cursor-not-allowed"
+            : "bg-[#EDEAE4] text-muted hover:bg-[#E4E0D8] hover:text-ink cursor-pointer"
         }
       `}
     >
@@ -342,6 +342,7 @@ const LOADING_LINES = [
   "Spotting your patterns.",
   "Building a model of how you think.",
 ];
+const LOADING_FOOTER = "The longer we work together, the sharper this gets.";
 
 function LoadingScreen() {
   const [visible, setVisible] = useState(0);
@@ -376,6 +377,15 @@ function LoadingScreen() {
           {line}
         </motion.p>
       ))}
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: visible >= 3 ? 1 : 0 }}
+        transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
+        className="font-serif italic text-muted-light"
+        style={{ fontSize: "1rem", lineHeight: 1.5, marginTop: "0.5rem" }}
+      >
+        {LOADING_FOOTER}
+      </motion.p>
     </motion.div>
   );
 }
