@@ -8,9 +8,9 @@ import { journal } from "@/data/mockData";
 type Q1State = 0 | 1 | 2 | 3;
 type Step = "q1" | "q2" | "loading" | "reveal";
 
-const LINE1 = "Hey there, I'm Mira.";
-const LINE2 = "Before we work together, I want to learn how you think.";
-const LINE3 = "Paste something you've written for work lately. Anything will do, as long as it's yours.";
+const LINE1 = "I'm Mira.";
+const LINE2 = "I'm not a tool you open when you need something — I'm an investment partner who keeps working between sessions. I watch your decisions, learn your patterns, and get sharper at backing you over time.";
+const LINE3 = "Before we can do that, I need to understand how you think. Paste something you've written for work.";
 
 // ─── Text extraction ──────────────────────────────────────────────────────────
 
@@ -121,9 +121,9 @@ export default function OnboardingFlow() {
   );
 }
 
-// ─── Shared button ────────────────────────────────────────────────────────────
+// ─── Shared upload action link ────────────────────────────────────────────────
 
-function OutlineButton({
+function ActionLink({
   onClick,
   disabled = false,
   dimmed = false,
@@ -139,15 +139,14 @@ function OutlineButton({
   return (
     <button
       onClick={onClick}
-      disabled={disabled}
+      disabled={disabled || dimmed}
       title={title}
       className={`
-        font-sans text-meta px-4 py-2 rounded border border-solid
-        transition-all duration-150
+        font-sans text-meta transition-colors duration-150 bg-transparent border-none p-0
         ${
           dimmed || disabled
-            ? "border-hairline text-muted-light cursor-not-allowed"
-            : "border-hairline text-muted hover:border-muted hover:text-ink hover:bg-[#F2F0EB] cursor-pointer"
+            ? "text-muted-light cursor-not-allowed"
+            : "text-muted hover:text-ink cursor-pointer"
         }
       `}
     >
@@ -260,12 +259,12 @@ function Q1Screen({
                   onChange={handleFile}
                   className="hidden"
                 />
-                <OutlineButton onClick={() => fileInputRef.current?.click()} disabled={extracting}>
+                <ActionLink onClick={() => fileInputRef.current?.click()} disabled={extracting}>
                   {extracting ? "Extracting…" : "Upload from computer"}
-                </OutlineButton>
-                <OutlineButton dimmed title="Coming soon">
+                </ActionLink>
+                <ActionLink dimmed title="Coming soon">
                   Import from Drive
-                </OutlineButton>
+                </ActionLink>
               </div>
 
               <button
@@ -305,7 +304,7 @@ function Q2Screen({
       </p>
       <p className="font-serif text-muted" style={{ fontSize: "1.5rem", lineHeight: 1.4 }}>
         What&apos;s a decision from the last year you&apos;re still thinking about?
-        Win or loss, doesn&apos;t matter. A sentence is fine; a paragraph is better.
+        Win or loss, doesn&apos;t matter. This is how I start learning what matters to you.
       </p>
 
       <div className="flex flex-col gap-4 mt-2">
