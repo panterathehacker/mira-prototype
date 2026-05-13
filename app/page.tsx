@@ -1,7 +1,13 @@
+import Header from "@/components/home/Header";
+import SubHeader from "@/components/home/SubHeader";
+import CardColumn from "@/components/home/CardColumn";
+
 export default function Home() {
   return (
-    <main className="mx-auto max-w-[720px] px-6 py-8">
-      <p className="font-sans text-meta text-muted">Mira is coming.</p>
+    <main className="mx-auto w-full max-w-[720px] px-6 pb-24">
+      <Header />
+      <SubHeader />
+      <CardColumn />
     </main>
   );
 }
