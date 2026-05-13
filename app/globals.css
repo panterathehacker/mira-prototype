@@ -52,3 +52,12 @@ body {
   line-height: 1.55;
   min-height: 100vh;
 }
+
+/* Italic phrase delay: em tags inside sentences appear 200ms after parent */
+.sentence .sentence-em {
+  opacity: 0;
+  transition: opacity 400ms ease 200ms;
+}
+.sentence.sentence-visible .sentence-em {
+  opacity: 1;
+}

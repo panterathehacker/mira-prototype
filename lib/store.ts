@@ -9,7 +9,8 @@ interface AppState {
   journalOpen: boolean;
   pushBackActive: string | null;
   hasPlayedChime: boolean;
-  compositionTriggered: boolean;
+  compositionKey: number;
+  bumpCompositionKey: () => void;
 
   updateCardWithPushBack: (cardId: string, response: string) => void;
   addJournalQuestion: (question: string) => void;
@@ -28,7 +29,7 @@ export const useStore = create<AppState>((set) => ({
   journalOpen: false,
   pushBackActive: null,
   hasPlayedChime: false,
-  compositionTriggered: false,
+  compositionKey: 0,
 
   updateCardWithPushBack: (cardId, response) =>
     set((state) => ({
@@ -50,19 +51,20 @@ export const useStore = create<AppState>((set) => ({
       journal: { ...state.journal, thesis: newThesis },
     })),
 
+  bumpCompositionKey: () => set((state) => ({ compositionKey: state.compositionKey + 1 })),
   setPushBackActive: (cardId) => set({ pushBackActive: cardId }),
   setVariantDropdownOpen: (open) => set({ variantDropdownOpen: open }),
   setJournalOpen: (open) => set({ journalOpen: open }),
   setHasPlayedChime: () => set({ hasPlayedChime: true }),
 
   resetAll: () =>
-    set({
+    set((state) => ({
       cards: initialCards,
       journal: initialJournal,
       variantDropdownOpen: false,
       journalOpen: false,
       pushBackActive: null,
       hasPlayedChime: false,
-      compositionTriggered: true,
-    }),
+      compositionKey: state.compositionKey + 1,
+    })),
 }));
