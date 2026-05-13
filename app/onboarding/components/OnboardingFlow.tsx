@@ -293,24 +293,30 @@ function Q2Screen({
   onChange: (v: string) => void;
   onContinue: () => void;
 }) {
+  const fade = (delay: number) => ({
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    transition: { duration: 0.45, delay, ease: "easeOut" as const },
+  });
+
   return (
     <motion.div
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      initial={{ opacity: 1 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       transition={{ duration: 0.5, ease: "easeInOut" }}
       className="flex flex-col gap-6"
     >
-      <p className="font-serif font-medium text-ink" style={{ fontSize: "2.25rem", lineHeight: 1.2, letterSpacing: "-0.015em" }}>
+      <motion.p {...fade(0.5)} className="font-serif font-medium text-ink" style={{ fontSize: "2.25rem", lineHeight: 1.2, letterSpacing: "-0.015em" }}>
         One more thing.
-      </p>
-      <p className="font-serif text-muted" style={{ fontSize: "1.5rem", lineHeight: 1.4 }}>
+      </motion.p>
+      <motion.p {...fade(1.5)} className="font-serif text-muted" style={{ fontSize: "1.5rem", lineHeight: 1.4 }}>
         What&apos;s a decision from the last year you&apos;re still thinking about?
         Win or loss, doesn&apos;t matter.
-      </p>
-      <p className="font-serif text-muted-light" style={{ fontSize: "1rem", lineHeight: 1.5 }}>
+      </motion.p>
+      <motion.p {...fade(2.2)} className="font-serif text-muted-light" style={{ fontSize: "1rem", lineHeight: 1.5 }}>
         This is how I&apos;ll start learning what matters to you. The more we work together, the more I&apos;ll refine this.
-      </p>
+      </motion.p>
 
-      <div className="flex flex-col gap-4 mt-2">
+      <motion.div {...fade(2.9)} className="flex flex-col gap-4 mt-2">
         <textarea
           autoFocus
           value={value}
@@ -333,7 +339,7 @@ function Q2Screen({
             Continue →
           </button>
         </div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
@@ -431,7 +437,7 @@ function RevealScreen({ onStart }: { onStart: () => void }) {
           Here&apos;s what I&apos;ve got so far. I&apos;ll keep working on it as we go.
         </p>
         <p className="font-serif text-muted-light" style={{ fontSize: "1rem", lineHeight: 1.5 }}>
-          You can edit this later. The more we work together, the more I&apos;ll refine it.
+          You can edit this later but the more we work together, the more I&apos;ll refine it myself.
         </p>
       </div>
 
