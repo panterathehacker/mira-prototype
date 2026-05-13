@@ -12,17 +12,51 @@ const LINE1 = "Hey there, I'm Mira.";
 const LINE2 = "Before we work together, I want to learn how you think.";
 const LINE3 = "Paste something you've written for work lately. Anything will do, as long as it's yours.";
 
-const FADE = (duration = 0.5) => ({
-  initial: { opacity: 0 },
-  animate: { opacity: 1 },
-  exit: { opacity: 0 },
-  transition: { duration, ease: "easeInOut" as const },
-});
+// ─── Text extraction ──────────────────────────────────────────────────────────
+
+async function extractText(file: File): Promise<string> {
+  const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
+
+  if (ext === "pdf") {
+    const pdfjsLib = await import("pdfjs-dist");
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const pages = await Promise.all(
+      Array.from({ length: pdf.numPages }, async (_, i) => {
+        const page = await pdf.getPage(i + 1);
+        const content = await page.getTextContent();
+        return content.items
+          .map((item) => ("str" in item ? item.str : ""))
+          .join(" ");
+      })
+    );
+    return pages.join("\n\n");
+  }
+
+  if (ext === "docx") {
+    const mammoth = await import("mammoth");
+    const arrayBuffer = await file.arrayBuffer();
+    const result = await mammoth.extractRawText({ arrayBuffer });
+    return result.value;
+  }
+
+  // Plain text fallback
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => resolve((e.target?.result as string) ?? "");
+    reader.onerror = reject;
+    reader.readAsText(file);
+  });
+}
+
+// ─── Main flow ────────────────────────────────────────────────────────────────
 
 export default function OnboardingFlow() {
   const [step, setStep] = useState<Step>("q1");
   const [q1, setQ1] = useState("");
   const [q2, setQ2] = useState("");
+  const [transitioning, setTransitioning] = useState(false);
   const router = useRouter();
 
   function handleQ1() {
@@ -37,13 +71,18 @@ export default function OnboardingFlow() {
 
   useEffect(() => {
     if (step === "loading") {
-      const t = setTimeout(() => setStep("reveal"), 7000);
+      const t = setTimeout(() => setStep("reveal"), 6500);
       return () => clearTimeout(t);
     }
   }, [step]);
 
+  function handleStart() {
+    setTransitioning(true);
+    setTimeout(() => router.push("/"), 550);
+  }
+
   return (
-    <div className="min-h-screen bg-paper flex items-center justify-center px-12">
+    <div className="min-h-screen bg-paper flex items-center justify-center px-12 relative">
       <div className="w-full max-w-[680px]">
         <AnimatePresence mode="wait">
           {step === "q1" && (
@@ -54,10 +93,23 @@ export default function OnboardingFlow() {
           )}
           {step === "loading" && <LoadingScreen key="loading" />}
           {step === "reveal" && (
-            <RevealScreen key="reveal" onStart={() => router.push("/")} />
+            <RevealScreen key="reveal" onStart={handleStart} />
           )}
         </AnimatePresence>
       </div>
+
+      {/* Page-transition overlay */}
+      <AnimatePresence>
+        {transitioning && (
+          <motion.div
+            key="overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            className="fixed inset-0 bg-paper z-50 pointer-events-none"
+          />
+        )}
+      </AnimatePresence>
 
       <button
         onClick={() => router.push("/")}
@@ -69,6 +121,43 @@ export default function OnboardingFlow() {
   );
 }
 
+// ─── Shared button ────────────────────────────────────────────────────────────
+
+function OutlineButton({
+  onClick,
+  disabled = false,
+  dimmed = false,
+  children,
+  title,
+}: {
+  onClick?: () => void;
+  disabled?: boolean;
+  dimmed?: boolean;
+  children: React.ReactNode;
+  title?: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      title={title}
+      className={`
+        font-sans text-meta px-4 py-2 rounded border border-solid
+        transition-all duration-150
+        ${
+          dimmed || disabled
+            ? "border-hairline text-muted-light cursor-not-allowed"
+            : "border-hairline text-muted hover:border-muted hover:text-ink hover:bg-[#F2F0EB] cursor-pointer"
+        }
+      `}
+    >
+      {children}
+    </button>
+  );
+}
+
+// ─── Q1 ──────────────────────────────────────────────────────────────────────
+
 function Q1Screen({
   value,
   onChange,
@@ -79,6 +168,7 @@ function Q1Screen({
   onContinue: () => void;
 }) {
   const [q1State, setQ1State] = useState<Q1State>(0);
+  const [extracting, setExtracting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -86,29 +176,31 @@ function Q1Screen({
     const delay = delays[q1State];
     if (delay === null) return;
     const t = setTimeout(
-      () => setQ1State((prev) => Math.min(prev + 1, 3) as Q1State),
+      () => setQ1State((p) => Math.min(p + 1, 3) as Q1State),
       delay
     );
     return () => clearTimeout(t);
   }, [q1State]);
 
-  function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const text = ev.target?.result as string;
+    setExtracting(true);
+    try {
+      const text = await extractText(file);
       onChange(text);
-    };
-    reader.readAsText(file);
-    // Reset so the same file can be re-selected
-    e.target.value = "";
+    } catch {
+      onChange("(Could not extract text automatically — paste the content directly.)");
+    } finally {
+      setExtracting(false);
+      e.target.value = "";
+    }
   }
 
   return (
     <AnimatePresence mode="wait">
       {q1State === 0 && (
-        <motion.div key="s0" {...FADE()}>
+        <motion.div key="s0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5, ease: "easeInOut" }}>
           <p className="font-serif font-medium text-ink" style={{ fontSize: "3.75rem", lineHeight: 1.1, letterSpacing: "-0.02em" }}>
             {LINE1}
           </p>
@@ -116,7 +208,7 @@ function Q1Screen({
       )}
 
       {q1State === 1 && (
-        <motion.div key="s1" {...FADE()}>
+        <motion.div key="s1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5, ease: "easeInOut" }}>
           <p className="font-serif font-medium text-ink" style={{ fontSize: "2.25rem", lineHeight: 1.2, letterSpacing: "-0.015em" }}>
             {LINE2}
           </p>
@@ -124,7 +216,7 @@ function Q1Screen({
       )}
 
       {q1State === 2 && (
-        <motion.div key="s2" {...FADE()}>
+        <motion.div key="s2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5, ease: "easeInOut" }}>
           <p className="font-serif text-ink" style={{ fontSize: "1.5rem", lineHeight: 1.4, letterSpacing: "-0.01em" }}>
             {LINE3}
           </p>
@@ -132,7 +224,7 @@ function Q1Screen({
       )}
 
       {q1State === 3 && (
-        <motion.div key="s3" {...FADE()} className="flex flex-col gap-6">
+        <motion.div key="s3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5, ease: "easeInOut" }} className="flex flex-col gap-6">
           <p className="font-serif font-medium text-ink" style={{ fontSize: "3.75rem", lineHeight: 1.1, letterSpacing: "-0.02em" }}>
             {LINE1}
           </p>
@@ -143,7 +235,7 @@ function Q1Screen({
             {LINE3}
           </p>
 
-          <div className="flex flex-col gap-3 mt-2">
+          <div className="flex flex-col gap-4 mt-2">
             <textarea
               autoFocus
               value={value}
@@ -155,32 +247,25 @@ function Q1Screen({
                 }
               }}
               rows={6}
+              placeholder={extracting ? "Extracting text…" : ""}
               className="w-full font-serif text-body text-ink bg-transparent border-b border-solid border-hairline outline-none resize-none placeholder:text-muted-light py-3"
             />
 
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-5">
+              <div className="flex items-center gap-3">
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept=".txt,.md,.csv,text/*"
-                  onChange={handleFileUpload}
+                  accept=".txt,.md,.pdf,.docx,text/*"
+                  onChange={handleFile}
                   className="hidden"
                 />
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="font-sans text-meta text-muted hover:text-ink transition-colors duration-150"
-                >
-                  Upload from computer
-                </button>
-                <span className="text-muted-light text-meta select-none">·</span>
-                <button
-                  disabled
-                  className="font-sans text-meta text-muted-light cursor-not-allowed"
-                  title="Coming soon"
-                >
+                <OutlineButton onClick={() => fileInputRef.current?.click()} disabled={extracting}>
+                  {extracting ? "Extracting…" : "Upload from computer"}
+                </OutlineButton>
+                <OutlineButton dimmed title="Coming soon">
                   Import from Drive
-                </button>
+                </OutlineButton>
               </div>
 
               <button
@@ -197,6 +282,8 @@ function Q1Screen({
     </AnimatePresence>
   );
 }
+
+// ─── Q2 ──────────────────────────────────────────────────────────────────────
 
 function Q2Screen({
   value,
@@ -221,7 +308,7 @@ function Q2Screen({
         Win or loss, doesn&apos;t matter. A sentence is fine; a paragraph is better.
       </p>
 
-      <div className="flex flex-col gap-3 mt-2">
+      <div className="flex flex-col gap-4 mt-2">
         <textarea
           autoFocus
           value={value}
@@ -249,59 +336,71 @@ function Q2Screen({
   );
 }
 
+// ─── Loading ──────────────────────────────────────────────────────────────────
+
+const LOADING_LINES = [
+  "Reading your writing.",
+  "Spotting your patterns.",
+  "Building a model of how you think.",
+];
+
 function LoadingScreen() {
+  const [visible, setVisible] = useState(0);
+
+  useEffect(() => {
+    const timings = [0, 1800, 3600];
+    const timers = timings.map((delay, i) =>
+      setTimeout(() => setVisible((v) => Math.max(v, i + 1)), delay)
+    );
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       transition={{ duration: 0.5, ease: "easeInOut" }}
-      className="flex flex-col gap-6"
+      className="flex flex-col gap-5"
     >
-      <p className="font-serif text-subhead text-muted">
-        Got it. Give me a few seconds.
-      </p>
-      <motion.p
-        animate={{ opacity: [1, 1, 0.35, 1, 1] }}
-        transition={{
-          duration: 4,
-          times: [0, 0.25, 0.5, 0.75, 1],
-          repeat: Infinity,
-          ease: "easeInOut",
-          repeatDelay: 0.6,
-        }}
-        className="font-serif font-medium text-ink"
-        style={{ fontSize: "3.75rem", lineHeight: 1.1, letterSpacing: "-0.02em" }}
-      >
-        Mira
-      </motion.p>
+      {LOADING_LINES.map((line, i) => (
+        <motion.p
+          key={line}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: i < visible ? 1 : 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="font-serif font-medium text-ink"
+          style={{
+            fontSize: `${2.25 - i * 0.5}rem`,
+            lineHeight: 1.2,
+            letterSpacing: "-0.015em",
+          }}
+        >
+          {line}
+        </motion.p>
+      ))}
     </motion.div>
   );
 }
 
+// ─── Reveal ───────────────────────────────────────────────────────────────────
+
 function VoiceTag({ phrase, note }: { phrase: string; note: string }) {
   const [hovered, setHovered] = useState(false);
-
   return (
-    <div
-      className="relative"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      <span className="font-sans text-meta text-ink border border-solid border-hairline rounded-full px-3 py-1 cursor-default select-none">
+    <div className="relative" onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+      <span className="font-sans text-meta text-ink border border-solid border-hairline rounded-full px-3 py-1.5 cursor-default select-none">
         {note}
       </span>
       <AnimatePresence>
         {hovered && (
-          <motion.div
+          <motion.span
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 4 }}
             transition={{ duration: 0.15 }}
-            className="absolute bottom-full left-0 mb-2 z-10"
+            className="absolute bottom-full left-0 mb-2 font-serif italic text-meta text-ink bg-paper border border-solid border-hairline px-2 py-1 rounded whitespace-nowrap z-10 block"
           >
-            <span className="font-serif italic text-meta text-ink bg-paper border border-solid border-hairline px-2 py-1 rounded whitespace-nowrap block">
-              &ldquo;{phrase}&rdquo;
-            </span>
-          </motion.div>
+            &ldquo;{phrase}&rdquo;
+          </motion.span>
         )}
       </AnimatePresence>
     </div>
@@ -316,7 +415,8 @@ function RevealScreen({ onStart }: { onStart: () => void }) {
       className="flex flex-col gap-10"
     >
       <p className="font-serif text-subhead text-muted">
-        Here&apos;s what I&apos;ve got so far. I&apos;ll keep working on it as we go.
+        Here&apos;s what I&apos;ve got so far. I&apos;ll keep working on it as we go.{" "}
+        <span className="text-muted-light">You can edit this later.</span>
       </p>
 
       <div className="flex flex-col gap-8">
