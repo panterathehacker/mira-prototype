@@ -1,18 +1,23 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { journal } from "@/data/mockData";
 
-type Q1State = 0 | 1 | 2 | 3; // 0=line1 alone, 1=line2 alone, 2=line3 alone, 3=all + form
+type Q1State = 0 | 1 | 2 | 3;
 type Step = "q1" | "q2" | "loading" | "reveal";
 
 const LINE1 = "Hey there, I'm Mira.";
 const LINE2 = "Before we work together, I want to learn how you think.";
 const LINE3 = "Paste something you've written for work lately. Anything will do, as long as it's yours.";
 
-const FADE_DURATION = 0.5;
+const FADE = (duration = 0.5) => ({
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+  transition: { duration, ease: "easeInOut" as const },
+});
 
 export default function OnboardingFlow() {
   const [step, setStep] = useState<Step>("q1");
@@ -74,27 +79,36 @@ function Q1Screen({
   onContinue: () => void;
 }) {
   const [q1State, setQ1State] = useState<Q1State>(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const delays: Record<Q1State, number | null> = {
-      0: 3000,
-      1: 2500,
-      2: 2500,
-      3: null,
-    };
+    const delays: (number | null)[] = [2000, 2500, 2500, null];
     const delay = delays[q1State];
     if (delay === null) return;
     const t = setTimeout(
-      () => setQ1State((prev) => (prev < 3 ? ((prev + 1) as Q1State) : prev)),
+      () => setQ1State((prev) => Math.min(prev + 1, 3) as Q1State),
       delay
     );
     return () => clearTimeout(t);
   }, [q1State]);
 
+  function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const text = ev.target?.result as string;
+      onChange(text);
+    };
+    reader.readAsText(file);
+    // Reset so the same file can be re-selected
+    e.target.value = "";
+  }
+
   return (
     <AnimatePresence mode="wait">
       {q1State === 0 && (
-        <motion.div key="s0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: FADE_DURATION, ease: "easeInOut" }}>
+        <motion.div key="s0" {...FADE()}>
           <p className="font-serif font-medium text-ink" style={{ fontSize: "3.75rem", lineHeight: 1.1, letterSpacing: "-0.02em" }}>
             {LINE1}
           </p>
@@ -102,7 +116,7 @@ function Q1Screen({
       )}
 
       {q1State === 1 && (
-        <motion.div key="s1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: FADE_DURATION, ease: "easeInOut" }}>
+        <motion.div key="s1" {...FADE()}>
           <p className="font-serif font-medium text-ink" style={{ fontSize: "2.25rem", lineHeight: 1.2, letterSpacing: "-0.015em" }}>
             {LINE2}
           </p>
@@ -110,7 +124,7 @@ function Q1Screen({
       )}
 
       {q1State === 2 && (
-        <motion.div key="s2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: FADE_DURATION, ease: "easeInOut" }}>
+        <motion.div key="s2" {...FADE()}>
           <p className="font-serif text-ink" style={{ fontSize: "1.5rem", lineHeight: 1.4, letterSpacing: "-0.01em" }}>
             {LINE3}
           </p>
@@ -118,7 +132,7 @@ function Q1Screen({
       )}
 
       {q1State === 3 && (
-        <motion.div key="s3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: FADE_DURATION, ease: "easeInOut" }} className="flex flex-col gap-6">
+        <motion.div key="s3" {...FADE()} className="flex flex-col gap-6">
           <p className="font-serif font-medium text-ink" style={{ fontSize: "3.75rem", lineHeight: 1.1, letterSpacing: "-0.02em" }}>
             {LINE1}
           </p>
@@ -129,15 +143,46 @@ function Q1Screen({
             {LINE3}
           </p>
 
-          <div className="flex flex-col gap-4 mt-4">
+          <div className="flex flex-col gap-3 mt-2">
             <textarea
               autoFocus
               value={value}
               onChange={(e) => onChange(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  onContinue();
+                }
+              }}
               rows={6}
               className="w-full font-serif text-body text-ink bg-transparent border-b border-solid border-hairline outline-none resize-none placeholder:text-muted-light py-3"
             />
-            <div className="flex justify-end">
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-5">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".txt,.md,.csv,text/*"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="font-sans text-meta text-muted hover:text-ink transition-colors duration-150"
+                >
+                  Upload from computer
+                </button>
+                <span className="text-muted-light text-meta select-none">·</span>
+                <button
+                  disabled
+                  className="font-sans text-meta text-muted-light cursor-not-allowed"
+                  title="Coming soon"
+                >
+                  Import from Drive
+                </button>
+              </div>
+
               <button
                 onClick={onContinue}
                 disabled={!value.trim()}
@@ -163,20 +208,30 @@ function Q2Screen({
   onContinue: () => void;
 }) {
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: FADE_DURATION, ease: "easeInOut" }} className="flex flex-col gap-6">
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      transition={{ duration: 0.5, ease: "easeInOut" }}
+      className="flex flex-col gap-6"
+    >
       <p className="font-serif font-medium text-ink" style={{ fontSize: "2.25rem", lineHeight: 1.2, letterSpacing: "-0.015em" }}>
-        One more.
+        One more thing.
       </p>
       <p className="font-serif text-muted" style={{ fontSize: "1.5rem", lineHeight: 1.4 }}>
         What&apos;s a decision from the last year you&apos;re still thinking about?
         Win or loss, doesn&apos;t matter. A sentence is fine; a paragraph is better.
       </p>
 
-      <div className="flex flex-col gap-4 mt-4">
+      <div className="flex flex-col gap-3 mt-2">
         <textarea
           autoFocus
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              onContinue();
+            }
+          }}
           rows={6}
           className="w-full font-serif text-body text-ink bg-transparent border-b border-solid border-hairline outline-none resize-none placeholder:text-muted-light py-3"
         />
@@ -196,13 +251,23 @@ function Q2Screen({
 
 function LoadingScreen() {
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: FADE_DURATION, ease: "easeInOut" }} className="flex flex-col gap-4">
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      transition={{ duration: 0.5, ease: "easeInOut" }}
+      className="flex flex-col gap-6"
+    >
       <p className="font-serif text-subhead text-muted">
         Got it. Give me a few seconds.
       </p>
       <motion.p
-        animate={{ opacity: [1, 0.4, 1] }}
-        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+        animate={{ opacity: [1, 1, 0.35, 1, 1] }}
+        transition={{
+          duration: 4,
+          times: [0, 0.25, 0.5, 0.75, 1],
+          repeat: Infinity,
+          ease: "easeInOut",
+          repeatDelay: 0.6,
+        }}
         className="font-serif font-medium text-ink"
         style={{ fontSize: "3.75rem", lineHeight: 1.1, letterSpacing: "-0.02em" }}
       >
@@ -212,9 +277,44 @@ function LoadingScreen() {
   );
 }
 
+function VoiceTag({ phrase, note }: { phrase: string; note: string }) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <span className="font-sans text-meta text-ink border border-solid border-hairline rounded-full px-3 py-1 cursor-default select-none">
+        {note}
+      </span>
+      <AnimatePresence>
+        {hovered && (
+          <motion.div
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 4 }}
+            transition={{ duration: 0.15 }}
+            className="absolute bottom-full left-0 mb-2 z-10"
+          >
+            <span className="font-serif italic text-meta text-ink bg-paper border border-solid border-hairline px-2 py-1 rounded whitespace-nowrap block">
+              &ldquo;{phrase}&rdquo;
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 function RevealScreen({ onStart }: { onStart: () => void }) {
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: FADE_DURATION, ease: "easeInOut" }} className="flex flex-col gap-10">
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      transition={{ duration: 0.6, ease: "easeInOut" }}
+      className="flex flex-col gap-10"
+    >
       <p className="font-serif text-subhead text-muted">
         Here&apos;s what I&apos;ve got so far. I&apos;ll keep working on it as we go.
       </p>
@@ -233,12 +333,7 @@ function RevealScreen({ onStart }: { onStart: () => void }) {
           </span>
           <div className="flex flex-wrap gap-2">
             {journal.voicePhrases.map((vp) => (
-              <span
-                key={vp.phrase}
-                className="font-serif italic text-body text-ink border border-solid border-hairline rounded-full px-3 py-1"
-              >
-                {vp.phrase}
-              </span>
+              <VoiceTag key={vp.phrase} phrase={vp.phrase} note={vp.note} />
             ))}
           </div>
         </div>
