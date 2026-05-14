@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Card as CardType } from "@/data/mockData";
 import CardComposition from "./CardComposition";
@@ -12,7 +12,8 @@ interface CardProps {
   card: CardType;
   cardIndex: number;
   compositionKey: number;
-  isLast?: boolean;
+  startDelay: number;
+  allRevealed: boolean;
   onFirstSentence?: () => void;
 }
 
@@ -20,15 +21,27 @@ export default function Card({
   card,
   cardIndex,
   compositionKey,
-  isLast,
+  startDelay,
+  allRevealed,
   onFirstSentence,
 }: CardProps) {
   const [almostSaidVisible, setAlmostSaidVisible] = useState(false);
+  const [isCardVisible, setIsCardVisible] = useState(false);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const setPushBackActive = useStore((s) => s.setPushBackActive);
   const pushBackActive = useStore((s) => s.pushBackActive);
   const storeCards = useStore((s) => s.cards);
   const storeCard = storeCards.find((c) => c.id === card.id) ?? card;
+
+  useEffect(() => {
+    setIsCardVisible(false);
+    if (allRevealed) {
+      setIsCardVisible(true);
+      return;
+    }
+    const t = setTimeout(() => setIsCardVisible(true), startDelay);
+    return () => clearTimeout(t);
+  }, [compositionKey, startDelay, allRevealed]);
 
   function handleMouseEnter() {
     if (!card.almostSaid) return;
@@ -48,14 +61,23 @@ export default function Card({
   }
 
   const isPushBackOpen = pushBackActive === card.id;
+  const visible = isCardVisible || allRevealed;
 
   return (
     <motion.article
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      whileHover={{ y: -2, boxShadow: "0 4px 24px rgba(92, 122, 158, 0.13)" }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
-      className={`py-10 ${!isLast ? "border-b border-solid border-hairline" : ""}`}
+      animate={{
+        opacity: visible ? 1 : 0,
+        y: visible ? 0 : 14,
+        boxShadow: visible
+          ? "0 2px 20px rgba(92, 122, 158, 0.12)"
+          : "0 2px 20px rgba(92, 122, 158, 0.00)",
+      }}
+      whileHover={visible ? { y: -3, boxShadow: "0 6px 28px rgba(92, 122, 158, 0.20)" } : undefined}
+      initial={{ opacity: 0, y: 14 }}
+      transition={{ duration: 0.45, ease: "easeOut" }}
+      className="bg-paper rounded-md px-8 py-8"
     >
       <h3 className="font-serif text-card-title font-medium text-ink mb-4">
         {card.title}
@@ -64,7 +86,9 @@ export default function Card({
       <CardComposition
         sentences={card.sentences}
         cardIndex={cardIndex}
+        startDelay={startDelay}
         compositionKey={compositionKey}
+        allRevealed={allRevealed}
         onFirstSentence={cardIndex === 0 ? onFirstSentence : undefined}
       />
 
@@ -85,22 +109,15 @@ export default function Card({
 
       <p className="font-sans italic text-meta text-muted mt-6">{card.footer}</p>
 
-      <div className="flex items-center mt-5" style={{ gap: "1.5rem" }}>
-        {card.actions.map((action, i) => (
-          <motion.button
+      <div className="flex items-center flex-wrap gap-3 mt-5">
+        {card.actions.map((action) => (
+          <button
             key={action}
-            whileHover="hover"
             onClick={() => handleAction(action)}
-            className="font-sans text-meta text-muted hover:text-ink transition-colors duration-150 bg-transparent border-none p-0 cursor-pointer relative tracking-wide"
+            className="font-sans text-meta bg-[#EDEAE4] text-muted hover:bg-[#E4E0D8] hover:text-ink px-3 py-1.5 rounded-sm transition-all duration-150 cursor-pointer border-none"
           >
             {action}
-            <motion.span
-              variants={{ hover: { width: "100%" }, initial: { width: 0 } }}
-              initial="initial"
-              className="absolute bottom-[-1px] left-0 h-px bg-ink"
-              transition={{ duration: 0.2, ease: "easeOut" }}
-            />
-          </motion.button>
+          </button>
         ))}
       </div>
 
@@ -151,12 +168,18 @@ function PushBackInput({ cardId, onClose }: { cardId: string; onClose: () => voi
         className="w-full font-serif text-body text-ink bg-transparent border-b border-solid border-hairline outline-none resize-none placeholder:text-muted-light py-2"
         rows={2}
       />
-      <div className="flex gap-4 mt-2">
-        <button onClick={handleSubmit} className="font-sans text-meta text-muted hover:text-ink">
-          [Send]
+      <div className="flex gap-3 mt-3">
+        <button
+          onClick={handleSubmit}
+          className="font-sans text-meta bg-[#EDEAE4] text-muted hover:bg-[#E4E0D8] hover:text-ink px-3 py-1.5 rounded-sm transition-all duration-150 cursor-pointer border-none"
+        >
+          Send
         </button>
-        <button onClick={onClose} className="font-sans text-meta text-muted hover:text-ink">
-          [Cancel]
+        <button
+          onClick={onClose}
+          className="font-sans text-meta bg-[#EDEAE4] text-muted hover:bg-[#E4E0D8] hover:text-ink px-3 py-1.5 rounded-sm transition-all duration-150 cursor-pointer border-none"
+        >
+          Cancel
         </button>
       </div>
     </motion.div>

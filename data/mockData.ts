@@ -83,7 +83,7 @@ export const userProfile = {
 export const cards: Card[] = [
   {
     id: "pattern",
-    title: "The Pattern",
+    title: "You're applying the wrong filter to every deal this quarter.",
     sentences: [
       {
         text: "You've passed on four consumer AI deals this quarter: Halo, Verse, Ember, and the one you saw Monday.",
@@ -112,7 +112,7 @@ export const cards: Card[] = [
   },
   {
     id: "loop",
-    title: "The Loop",
+    title: "Resonance just proved your consumer monetization prior wrong.",
     sentences: [
       {
         text: "Remember Sana at Resonance? You met her in November, passed because you didn't believe consumers would pay for AI-native journaling.",
@@ -137,7 +137,7 @@ export const cards: Card[] = [
   },
   {
     id: "drift",
-    title: "The Drift",
+    title: "Your public thesis is too vague to attract the right founders.",
     sentences: [
       {
         text: "You tell people your thesis is \"consumer apps in the age of AI.\"",
@@ -165,7 +165,7 @@ export const cards: Card[] = [
   },
   {
     id: "portfolio",
-    title: "The Portfolio Check-in",
+    title: "Zehra's holding back a milestone. Your Lore check-in is overdue.",
     sentences: [
       { text: "Lore hired Sasha Demers as Head of Growth." },
       {
@@ -185,7 +185,7 @@ export const cards: Card[] = [
   },
   {
     id: "deal",
-    title: "The Deal",
+    title: "Salt checks three of your heuristics at once. Take the meeting.",
     sentences: [
       {
         text: "Priya Mehta (ex-Pinterest, ex-Poolsuite) is raising $2M for Salt, a taste journal.",

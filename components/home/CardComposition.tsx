@@ -1,45 +1,36 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import type { Sentence } from "@/data/mockData";
 
 interface CardCompositionProps {
   sentences: Sentence[];
   cardIndex: number;
+  startDelay: number;
   compositionKey: number;
+  allRevealed: boolean;
   onFirstSentence?: () => void;
 }
 
 const SENTENCE_GAP = 600;
-const CARD_GAP = 1200;
 
 export default function CardComposition({
   sentences,
   cardIndex,
+  startDelay,
   compositionKey,
+  allRevealed,
   onFirstSentence,
 }: CardCompositionProps) {
   const [visibleCount, setVisibleCount] = useState(0);
 
-  const revealAll = useCallback(() => {
-    setVisibleCount(sentences.length);
-  }, [sentences.length]);
-
-  useEffect(() => {
-    const handleScroll = () => revealAll();
-    window.addEventListener("wheel", handleScroll, { once: true, passive: true });
-    window.addEventListener("touchmove", handleScroll, { once: true, passive: true });
-    return () => {
-      window.removeEventListener("wheel", handleScroll);
-      window.removeEventListener("touchmove", handleScroll);
-    };
-  }, [revealAll, compositionKey]);
-
   useEffect(() => {
     setVisibleCount(0);
+    if (allRevealed) {
+      setVisibleCount(sentences.length);
+      return;
+    }
     const timeouts: ReturnType<typeof setTimeout>[] = [];
-    const startDelay = cardIndex * CARD_GAP;
-
     sentences.forEach((_, i) => {
       const t = setTimeout(() => {
         setVisibleCount((c) => Math.max(c, i + 1));
@@ -49,11 +40,9 @@ export default function CardComposition({
       }, startDelay + i * SENTENCE_GAP);
       timeouts.push(t);
     });
-
     return () => timeouts.forEach(clearTimeout);
-    // compositionKey intentionally in deps to re-trigger on replay
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [compositionKey]);
+  }, [compositionKey, allRevealed]);
 
   return (
     <div>
