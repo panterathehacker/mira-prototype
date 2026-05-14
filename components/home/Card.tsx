@@ -53,7 +53,7 @@ export default function Card({
     <motion.article
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      whileHover={{ y: -2, boxShadow: "0 4px 24px rgba(0,0,0,0.04)" }}
+      whileHover={{ y: -2, boxShadow: "0 4px 24px rgba(92, 122, 158, 0.13)" }}
       transition={{ duration: 0.2, ease: "easeOut" }}
       className={`py-10 ${!isLast ? "border-b border-solid border-hairline" : ""}`}
     >

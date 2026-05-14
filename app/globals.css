@@ -7,11 +7,12 @@
 
   /* Colors */
   --color-ink: #0A0A0A;
+  --color-bg: #EAE3D0;
   --color-paper: #FAFAF8;
   --color-muted: #6B6B68;
   --color-muted-light: #9C9C98;
-  --color-accent: #8B6914;
-  --color-accent-hover: #6E5210;
+  --color-accent: #5C7A9E;
+  --color-accent-hover: #45607E;
   --color-hairline: #C8C4BC;
 
   /* Font sizes with associated line-heights */
@@ -45,7 +46,7 @@ html {
 }
 
 body {
-  background-color: var(--color-paper);
+  background-color: var(--color-bg);
   color: var(--color-ink);
   font-family: var(--font-serif);
   font-size: 1rem;

@@ -26,7 +26,10 @@ export default function CardColumn() {
   }, [compositionKey]);
 
   return (
-    <div>
+    <div
+      className="bg-paper px-8 rounded-sm"
+      style={{ boxShadow: "0 2px 32px rgba(92, 122, 158, 0.10)" }}
+    >
       {mockCards.map((card, i) => (
         <Card
           key={card.id}
