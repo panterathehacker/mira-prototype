@@ -103,3 +103,55 @@
 2. Phase 5: Variant dropdown (V key / clicking "Mira")
 3. Phase 7: Full demo run-through, timing tuning
 4. Phase 8: Deploy to Vercel, write BUILD_SUMMARY.md
+
+---
+
+## Session 4 — 2026-05-13
+
+**Worked on:** Phase 4 (Journal panel — complete), Phase 6 polish, design iterations
+
+**Built:**
+- `components/home/JournalPanel.tsx` — full slide-in panel with backdrop, close button, all three sections
+- **Thesis section:** `contentEditable` paragraph; `Enter` confirms (triggers blur, no newline); `Escape` cancels; hover/focus highlights with `bg-[#F5F3EF]`; "Updated. I'll factor this in." confirmation at body size in accent color; "Click to edit" hint disappears while focused
+- **Voice section:** chips display Mira's opinionated note (e.g., "preferred 3:1 over 'moat'"); hover tooltip shows `"phrase" — source` (e.g., `"wedge" — across 47 deal notes`)
+- **Figuring out section:** each question has "Weigh in" link; on submit, user's response persists below the question behind a left-border hairline (same visual language as push-back response on cards); "Update" link allows revising; no disappearing toast — response stays visible
+- `lib/store.ts` — added `weighInOnQuestion(index, note)` action; updates specific question's `userNote` field instead of appending a new question
+- `data/mockData.ts` — added `userNote?: string` to `FiguringOutItem` interface
+- `app/onboarding/components/OnboardingFlow.tsx` — added `connect` step between Q2 and loading: Google / AngelList / LinkedIn / X toggles with connect/disconnect state; copy explains how Mira will use each source; skip link at bottom-right of all onboarding screens
+- Onboarding fine print lines updated to `text-accent` throughout (Q2 footer, loading footer, reveal subheader)
+- `app/layout.tsx` — favicon set via `app/icon.png` (App Router file convention); removed conflicting `icons` metadata override
+- `public/logo.png` → `app/icon.png` (user uploaded; old `app/favicon.ico` deleted)
+
+**Design changes / iterations this session:**
+- Background: parchment `#EAE3D0` → `#C2CBDA` (slate-blue; enough contrast against `#FAFAF8` cards)
+- Accent: amber-gold `#8B6914` → slate blue `#5C7A9E` / hover `#45607E` (gold felt too warm against blue-grey bg)
+- Card shadow: uses accent color at low alpha (`rgba(92,122,158,0.12)`) — matches bg tone
+- SubHeader copy: "Five things since Friday." → "Here's what I caught while you were heads-down." (partnership framing)
+- Card titles: changed from named takes ("The Pattern") to opinionated first-person claims ("I think your pass filter has drifted from what actually worked.") — deliberate deviation from PRD §3.5 per David's direction
+- AlmostSaid: changed from card-hover reveal (PRD §3.14) to explicit click/toggle button — per David's request (hover was triggering accidentally)
+- Buttons: PRD specifies text-only with brackets; changed to soft-fill `bg-[#EDEAE4]` style throughout — matches onboarding Q1 and feels more intentional
+- Header: multiple iterations on date + Journal button; settled on `text-subhead text-muted` date + soft-fill "Journal" button
+- Journal "Your voice" chips: iterated three times — settled on note as chip text, `"phrase" — source` on hover
+
+**Stuck on / had to force:**
+- `§4.3 copy rule` conflict: PRD forbids hedges ("I think", "maybe", "probably") from Mira, but David explicitly wanted card titles phrased as opinions ("I think...", "might", "probably"). Titles use the hedges; body copy does not.
+- Favicon required deleting `app/favicon.ico` (default Next.js file) and placing `app/icon.png`; metadata `icons` override was conflicting; still requires hard refresh to clear browser cache
+- Voice chip design took three passes to land: phrase-as-chip → note-as-chip with phrase tooltip → note-as-chip with `"phrase" — source` tooltip (final)
+- `contentEditable` paragraph doesn't register as `HTMLInputElement` or `HTMLTextAreaElement`, so keyboard shortcuts (`J`, `R`, `V`) would fire while editing thesis — not yet fixed
+
+**Status of all phases:**
+- Phase 0: DONE
+- Phase 1: DONE
+- Phase 2: DONE
+- Phase 3: DONE
+- Phase 4: DONE
+- Phase 5: NOT STARTED (Variant dropdown — VariantDropdown.tsx; store state + keyboard shortcut exist, component missing)
+- Phase 6: DONE
+- Phase 7: Not started (full demo run-through needed)
+- Phase 8: NOT STARTED
+
+**Next session priorities:**
+1. Phase 5: Variant dropdown (click "Mira" → shows 5 variants + "+ build your own"; Investments active; others greyed)
+2. Fix keyboard shortcuts firing in contenteditable (add `[contenteditable]` check to KeyboardShortcuts)
+3. Phase 7: Full demo run-through, timing tuning, verify accent placement, verify no slop
+4. Phase 8: Vercel deploy, BUILD_SUMMARY.md, submission tag

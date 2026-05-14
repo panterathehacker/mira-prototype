@@ -19,7 +19,6 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Mira",
   description: "An enduring partnership.",
-  icons: { icon: "/logo.png" },
 };
 
 export default function RootLayout({

@@ -28,6 +28,7 @@ export interface VoicePhrase {
 
 export interface FiguringOutItem {
   text: string;
+  userNote?: string;
 }
 
 export interface Journal {

@@ -15,6 +15,7 @@ interface AppState {
   updateCardWithPushBack: (cardId: string, response: string) => void;
   addJournalQuestion: (question: string) => void;
   updateJournalThesis: (newThesis: string) => void;
+  weighInOnQuestion: (index: number, note: string) => void;
   setPushBackActive: (cardId: string | null) => void;
   setVariantDropdownOpen: (open: boolean) => void;
   setJournalOpen: (open: boolean) => void;
@@ -49,6 +50,16 @@ export const useStore = create<AppState>((set) => ({
   updateJournalThesis: (newThesis) =>
     set((state) => ({
       journal: { ...state.journal, thesis: newThesis },
+    })),
+
+  weighInOnQuestion: (index, note) =>
+    set((state) => ({
+      journal: {
+        ...state.journal,
+        figuringOut: state.journal.figuringOut.map((item, i) =>
+          i === index ? { ...item, userNote: note } : item
+        ),
+      },
     })),
 
   bumpCompositionKey: () => set((state) => ({ compositionKey: state.compositionKey + 1 })),
