@@ -389,7 +389,7 @@ function ConnectScreen({ onContinue }: { onContinue: () => void }) {
           Before I start, let me see where you work.
         </motion.p>
         <motion.p {...fade(0.7)} className="font-serif text-muted" style={{ fontSize: "1rem", lineHeight: 1.5 }}>
-          This is how I&apos;ll know your deals, emails, and portfolio — not just what you tell me.
+          This is how I&apos;ll know your deals, emails, and portfolio. Not just what you tell me.
         </motion.p>
       </div>
 
