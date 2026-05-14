@@ -26,11 +26,11 @@ export default function Header() {
         Mira
       </motion.span>
 
-      <div className="flex items-center gap-6">
-        <span className="font-sans text-meta text-muted">{formatted}</span>
+      <div className="flex items-center gap-4">
+        <span className="font-sans text-body text-ink">{formatted}</span>
         <button
           onClick={() => setJournalOpen(true)}
-          className="font-sans text-meta text-muted italic bg-transparent border-none p-0 cursor-pointer hover:text-ink transition-colors duration-150"
+          className="font-sans text-meta bg-[#EDEAE4] text-muted hover:bg-[#E4E0D8] hover:text-ink px-3 py-1.5 rounded-sm transition-all duration-150 cursor-pointer border-none"
         >
           Journal
         </button>

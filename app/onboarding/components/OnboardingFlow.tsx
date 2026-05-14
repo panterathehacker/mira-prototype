@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { journal } from "@/data/mockData";
 
 type Q1State = 0 | 1 | 2 | 3;
-type Step = "q1" | "q2" | "loading" | "reveal";
+type Step = "q1" | "q2" | "connect" | "loading" | "reveal";
 
 const LINE1 = "Hey there, I'm Mira.";
 const LINE2 = "Before we work together, I want to learn how you think.";
@@ -66,6 +66,10 @@ export default function OnboardingFlow() {
 
   function handleQ2() {
     if (!q2.trim()) return;
+    setStep("connect");
+  }
+
+  function handleConnect() {
     setStep("loading");
   }
 
@@ -90,6 +94,9 @@ export default function OnboardingFlow() {
           )}
           {step === "q2" && (
             <Q2Screen key="q2" value={q2} onChange={setQ2} onContinue={handleQ2} />
+          )}
+          {step === "connect" && (
+            <ConnectScreen key="connect" onContinue={handleConnect} />
           )}
           {step === "loading" && <LoadingScreen key="loading" />}
           {step === "reveal" && (
@@ -340,6 +347,86 @@ function Q2Screen({
             Continue →
           </button>
         </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ─── Connect ─────────────────────────────────────────────────────────────────
+
+const SERVICES = [
+  { id: "google",    name: "Google",    description: "Gmail, Calendar, Drive — your deal emails and meeting notes" },
+  { id: "angellist", name: "AngelList", description: "Your portfolio and investment history" },
+  { id: "linkedin",  name: "LinkedIn",  description: "Your network and professional signals" },
+  { id: "x",         name: "X",         description: "Your public thinking and conversations" },
+];
+
+function ConnectScreen({ onContinue }: { onContinue: () => void }) {
+  const [connected, setConnected] = useState<Set<string>>(new Set());
+
+  function toggle(id: string) {
+    setConnected((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
+
+  const fade = (delay: number) => ({
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    transition: { duration: 0.45, delay, ease: "easeOut" as const },
+  });
+
+  return (
+    <motion.div
+      initial={{ opacity: 1 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      transition={{ duration: 0.5, ease: "easeInOut" }}
+      className="flex flex-col gap-8"
+    >
+      <div className="flex flex-col gap-3">
+        <motion.p {...fade(0.3)} className="font-serif font-medium text-ink" style={{ fontSize: "2.25rem", lineHeight: 1.2, letterSpacing: "-0.015em" }}>
+          Before I start, let me see where you work.
+        </motion.p>
+        <motion.p {...fade(0.7)} className="font-serif text-muted" style={{ fontSize: "1rem", lineHeight: 1.5 }}>
+          This is how I&apos;ll know your deals, emails, and portfolio — not just what you tell me.
+        </motion.p>
+      </div>
+
+      <motion.div {...fade(1.1)} className="flex flex-col">
+        {SERVICES.map((service) => (
+          <div key={service.id} className="flex items-center justify-between py-4 border-b border-solid border-hairline">
+            <div className="flex flex-col gap-0.5">
+              <span className="font-sans text-body font-medium text-ink">{service.name}</span>
+              <span className="font-sans text-meta text-muted">{service.description}</span>
+            </div>
+            <button
+              onClick={() => toggle(service.id)}
+              className={`font-sans text-meta px-3 py-1.5 rounded-sm transition-all duration-150 cursor-pointer border-none ${
+                connected.has(service.id)
+                  ? "bg-[#E4E0D8] text-accent"
+                  : "bg-[#EDEAE4] text-muted hover:bg-[#E4E0D8] hover:text-ink"
+              }`}
+            >
+              {connected.has(service.id) ? "Connected" : "Connect"}
+            </button>
+          </div>
+        ))}
+      </motion.div>
+
+      <motion.div {...fade(1.5)} className="flex items-center justify-between">
+        <button
+          onClick={onContinue}
+          className="font-sans text-meta text-muted-light hover:text-muted transition-colors duration-150 bg-transparent border-none p-0 cursor-pointer"
+        >
+          Skip for now
+        </button>
+        <button
+          onClick={onContinue}
+          className="font-sans text-body text-ink hover:underline underline-offset-4 transition-all duration-150"
+        >
+          Continue →
+        </button>
       </motion.div>
     </motion.div>
   );
