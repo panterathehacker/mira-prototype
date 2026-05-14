@@ -16,6 +16,8 @@ export interface Card {
   actions: string[];
   almostSaid: AlmostSaid | null;
   pushBackResponse?: string;
+  actionResponses?: Record<string, string>;
+  dismissActions?: string[];
 }
 
 export interface VoicePhrase {
@@ -83,7 +85,7 @@ export const userProfile = {
 export const cards: Card[] = [
   {
     id: "pattern",
-    title: "You're applying the wrong filter to every deal this quarter.",
+    title: "I think your pass filter has drifted from what actually worked.",
     sentences: [
       {
         text: "You've passed on four consumer AI deals this quarter: Halo, Verse, Ember, and the one you saw Monday.",
@@ -105,6 +107,10 @@ export const cards: Card[] = [
     ],
     footer: "Tracking since March.",
     actions: ["Show me the reasoning", "Push back", "Snooze"],
+    actionResponses: {
+      "Show me the reasoning": "Four passes this quarter: Halo, Verse, Ember, and Monday's. Each note in your CRM uses \"feels like a feature, not a company.\" You wrote the same phrase before writing checks into Lore (seed, $4M post) and Cluely (seed, $6M post). In both cases it was accurate — they were features at the time — but the founders had a behavioral wedge that made them companies eventually.\n\nThe filter isn't wrong. The question is whether you're applying it too early, before the wedge is visible.",
+    },
+    dismissActions: ["Snooze"],
     almostSaid: {
       text: "I think two of these passes were Bryan's call, not yours.",
       reason: "I don't have evidence, so I'm not making the claim in the main card.",
@@ -112,7 +118,7 @@ export const cards: Card[] = [
   },
   {
     id: "loop",
-    title: "Resonance just proved your consumer monetization prior wrong.",
+    title: "Resonance may have just proved your consumer monetization prior wrong.",
     sentences: [
       {
         text: "Remember Sana at Resonance? You met her in November, passed because you didn't believe consumers would pay for AI-native journaling.",
@@ -130,6 +136,11 @@ export const cards: Card[] = [
     ],
     footer: "Surfaced because Resonance crossed a threshold I'd been watching.",
     actions: ["Draft a note to Sana", "Update my thesis", "Disagree"],
+    actionResponses: {
+      "Draft a note to Sana": "Hi Sana,\n\nCongratulations on $1M ARR — Resonance is the clearest data point I've seen on consumer willingness to pay for ritual products. I passed when you were raising and you were right.\n\nWould love 30 minutes to hear what you've learned about the category. No agenda.\n\n—David",
+      "Update my thesis": "Updated prior: consumers will pay meaningful prices for products that deepen a ritual they already practice, if the product makes the ritual feel more personal rather than more efficient. The resistance is to productivity framing, not to paying. Resonance at $4 ACV and 250K users in nine months is the cleanest proof point I have.",
+    },
+    dismissActions: [],
     almostSaid: {
       text: "She'll raise a Series A at $30M post within the next twelve months.",
       reason: "I'm 60% on this. Felt unfair to put in the main card.",
@@ -137,7 +148,7 @@ export const cards: Card[] = [
   },
   {
     id: "drift",
-    title: "Your public thesis is too vague to attract the right founders.",
+    title: "Your public thesis might be too vague to attract the right founders.",
     sentences: [
       {
         text: "You tell people your thesis is \"consumer apps in the age of AI.\"",
@@ -158,6 +169,10 @@ export const cards: Card[] = [
     ],
     footer: "Drafted from your last 47 days of activity.",
     actions: ["Show the draft", "Not yet"],
+    actionResponses: {
+      "Show the draft": "Draft (for bio / LinkedIn / cold inbound):\n\n\"I invest in products that deepen a ritual the user already has — journaling, taste-making, social signaling — using AI to make the user more themselves, not more efficient. If you're building something that fits that description, I want to hear from you.\"",
+    },
+    dismissActions: ["Not yet"],
     almostSaid: {
       text: "Your Twitter bio still says \"investing in the future of work,\" which is at least two theses old.",
       reason: "Felt nitpicky. Mentioning it here in case it changes the priority.",
@@ -165,7 +180,7 @@ export const cards: Card[] = [
   },
   {
     id: "portfolio",
-    title: "Zehra's holding back a milestone. Your Lore check-in is overdue.",
+    title: "Is Zehra holding something back? Your Lore check-in is probably overdue.",
     sentences: [
       { text: "Lore hired Sasha Demers as Head of Growth." },
       {
@@ -181,11 +196,15 @@ export const cards: Card[] = [
     ],
     footer: "Pulled from LinkedIn, Twitter, and your call notes.",
     actions: ["Draft check-in", "Skip"],
+    actionResponses: {
+      "Draft check-in": "Hi Zehra,\n\nSaw the Sasha Demers hire and the profitability tweet — congrats on both. Would love 20 minutes to hear what you're thinking about next year before you go into fundraising mode. Happy to be useful ahead of it.\n\n—David",
+    },
+    dismissActions: ["Skip"],
     almostSaid: null,
   },
   {
     id: "deal",
-    title: "Salt checks three of your heuristics at once. Take the meeting.",
+    title: "Salt might be worth 30 minutes — it's triggering three of your own heuristics.",
     sentences: [
       {
         text: "Priya Mehta (ex-Pinterest, ex-Poolsuite) is raising $2M for Salt, a taste journal.",
@@ -211,6 +230,11 @@ export const cards: Card[] = [
     footer:
       "Flagged because it triggered three of your stated heuristics simultaneously, which has happened twice before in your history. Both times you wrote the check.",
     actions: ["Set up 30 min", "Tell me more", "Pass"],
+    actionResponses: {
+      "Set up 30 min": "Done. I'll send you a prep note the morning of the call with the questions worth asking.",
+      "Tell me more": "Priya built a private taste log at Poolsuite in 2022 — 40K users, no marketing budget, killed in a pivot. She has real evidence for the behavioral wedge she's describing.\n\nTwo things worth probing on the call: where she thinks taste data goes after Instagram, and why this moment versus 18 months ago. The $15M post valuation is aggressive for a pre-launch raise, which is the one real reason to pressure-test the thesis before writing.",
+    },
+    dismissActions: ["Pass"],
     almostSaid: {
       text: "Priya's co-founder, who isn't on the deck, was the actual product lead at Poolsuite.",
       reason:
