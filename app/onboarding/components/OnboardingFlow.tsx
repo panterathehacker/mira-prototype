@@ -86,7 +86,7 @@ export default function OnboardingFlow() {
   }
 
   return (
-    <div className="min-h-screen bg-paper flex items-center justify-center px-12 relative">
+    <div className="min-h-screen flex items-center justify-center px-12 relative" style={{ backgroundColor: "var(--color-bg)" }}>
       <div className="w-full max-w-[680px]">
         <AnimatePresence mode="wait">
           {step === "q1" && (
@@ -320,7 +320,7 @@ function Q2Screen({
         What&apos;s a decision from the last year you&apos;re still thinking about?
         Win or loss, doesn&apos;t matter.
       </motion.p>
-      <motion.p {...fade(2.2)} className="font-serif text-muted-light" style={{ fontSize: "1rem", lineHeight: 1.5 }}>
+      <motion.p {...fade(2.2)} className="font-serif text-accent" style={{ fontSize: "1rem", lineHeight: 1.5 }}>
         This is how I&apos;ll start learning what matters to you. The more we work together, the more I&apos;ll refine this.
       </motion.p>
 
@@ -478,7 +478,7 @@ function LoadingScreen() {
         initial={{ opacity: 0 }}
         animate={{ opacity: visible >= 3 ? 1 : 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="font-serif italic text-muted-light"
+        className="font-serif italic text-accent"
         style={{ fontSize: "1rem", lineHeight: 1.5, marginTop: "0.5rem" }}
       >
         {LOADING_FOOTER}
@@ -524,7 +524,7 @@ function RevealScreen({ onStart }: { onStart: () => void }) {
         <p className="font-serif font-medium text-muted" style={{ fontSize: "1.75rem", lineHeight: 1.25, letterSpacing: "-0.015em" }}>
           Here&apos;s what I&apos;ve got so far. I&apos;ll keep working on it as we go.
         </p>
-        <p className="font-serif text-muted-light" style={{ fontSize: "1rem", lineHeight: 1.5 }}>
+        <p className="font-serif text-accent" style={{ fontSize: "1rem", lineHeight: 1.5 }}>
           You can edit this later but the more we work together, the more I&apos;ll refine it myself.
         </p>
       </div>
