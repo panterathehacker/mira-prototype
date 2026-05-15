@@ -82,7 +82,7 @@ export default function OnboardingFlow() {
 
   function handleStart() {
     setTransitioning(true);
-    setTimeout(() => router.push("/"), 550);
+    setTimeout(() => router.push("/home"), 550);
   }
 
   return (
@@ -120,7 +120,7 @@ export default function OnboardingFlow() {
       </AnimatePresence>
 
       <button
-        onClick={() => router.push("/")}
+        onClick={() => router.push("/home")}
         className="fixed bottom-8 right-8 font-sans text-meta text-muted-light hover:text-muted transition-colors duration-150"
       >
         skip

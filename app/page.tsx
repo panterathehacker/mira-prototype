@@ -1,19 +1,5 @@
-import Header from "@/components/home/Header";
-import SubHeader from "@/components/home/SubHeader";
-import CardColumn from "@/components/home/CardColumn";
-import KeyboardShortcuts from "@/components/home/KeyboardShortcuts";
-import JournalPanel from "@/components/home/JournalPanel";
+import { redirect } from "next/navigation";
 
-export default function Home() {
-  return (
-    <>
-      <main className="mx-auto w-full max-w-[720px] px-6 pb-36">
-        <KeyboardShortcuts />
-        <Header />
-        <SubHeader />
-        <CardColumn />
-      </main>
-      <JournalPanel />
-    </>
-  );
+export default function Root() {
+  redirect("/onboarding");
 }
