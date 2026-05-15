@@ -42,7 +42,7 @@ export default function CardColumn() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-7">
       {mockCards.map((card, i) => (
         <Card
           key={card.id}

@@ -74,15 +74,15 @@ export default function Card({
             opacity: visible ? 1 : 0,
             y: visible ? 0 : 14,
             boxShadow: visible
-              ? "0 2px 20px rgba(92, 122, 158, 0.12)"
-              : "0 2px 20px rgba(92, 122, 158, 0.00)",
+              ? "0 1px 4px rgba(10, 10, 10, 0.06)"
+              : "0 1px 4px rgba(10, 10, 10, 0.00)",
           }}
           exit={{ opacity: 0, y: -8, transition: { duration: 0.3, ease: "easeIn" } }}
-          whileHover={visible ? { y: -3, boxShadow: "0 6px 28px rgba(92, 122, 158, 0.20)" } : undefined}
+          whileHover={visible ? { y: -4, boxShadow: "0 12px 40px rgba(10, 10, 10, 0.10)" } : undefined}
           transition={{ duration: 0.45, ease: "easeOut" }}
-          className="bg-paper rounded-md px-8 py-8"
+          className="bg-paper rounded-sm px-10 py-10"
         >
-          <h3 className="font-serif text-card-title font-medium text-ink mb-4">
+          <h3 className="font-serif text-card-title font-medium text-ink mb-5">
             {card.title}
           </h3>
 

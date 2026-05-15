@@ -40,6 +40,7 @@ export interface Journal {
 export interface Variant {
   id: string;
   label: string;
+  description: string;
   active: boolean;
 }
 
@@ -262,9 +263,8 @@ export const journal: Journal = {
 };
 
 export const variants: Variant[] = [
-  { id: "investments", label: "Mira / Investments", active: true },
-  { id: "product", label: "Mira / Product", active: false },
-  { id: "founder", label: "Mira / Founder", active: false },
-  { id: "editorial", label: "Mira / Editorial", active: false },
-  { id: "research", label: "Mira / Research", active: false },
+  { id: "investor", label: "Investor", description: "Tracks deals, thesis drift, and portfolio signals.", active: true },
+  { id: "cofounder", label: "Co-founder", description: "Watches team dynamics, runway, and product-market fit.", active: false },
+  { id: "researcher", label: "Researcher", description: "Synthesizes papers, flags contradictions, tracks open questions.", active: false },
+  { id: "engineer", label: "Engineer", description: "Monitors PRs, incidents, and accumulating technical debt.", active: false },
 ];

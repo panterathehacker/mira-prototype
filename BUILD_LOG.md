@@ -155,3 +155,51 @@
 2. Fix keyboard shortcuts firing in contenteditable (add `[contenteditable]` check to KeyboardShortcuts)
 3. Phase 7: Full demo run-through, timing tuning, verify accent placement, verify no slop
 4. Phase 8: Vercel deploy, BUILD_SUMMARY.md, submission tag
+
+---
+
+## Session 5 — 2026-05-14
+
+**Worked on:** Phase 5 (variant dropdown), keyboard shortcut fix, design polish pass, README rewrite
+
+**Built:**
+- `components/variants/VariantDropdown.tsx` — AnimatePresence fade+scale dropdown from "Mira" header; outside click closes via document mousedown listener; Investor active with accent ✓, other personas at 40% opacity; "+ build your own" closes dropdown and routes to `/onboarding`
+- `data/mockData.ts` — variants reworked from "Mira / Investments" etc. to four named personas (Investor, Co-founder, Researcher, Engineer) each with a one-line description; `description` field added to `Variant` interface
+- `components/home/Header.tsx` — "Mira" wrapped in relative container with rotating chevron SVG (180° on open via Framer Motion); VariantDropdown rendered as child
+- `components/home/KeyboardShortcuts.tsx` — fixed: added `t.isContentEditable` check so J/R/V no longer fire while editing the thesis contenteditable
+- `README.md` — full rewrite: product-focused (pain point, what Mira does, interface, onboarding, keyboard shortcuts, stack); no recruiting context
+
+**Design polish pass:**
+- `header-mira`: 2rem → 2.75rem (nameplate, not a logo)
+- `card-title`: 1.375rem → 1.5rem, tighter letter-spacing (-0.02em)
+- `body`: 1rem / 1.65 → 1.0625rem / 1.7 (more editorial)
+- Card padding: `px-8 py-8` → `px-10 py-10`
+- Card gap: `gap-4` → `gap-7`
+- Card corners: `rounded-md` → `rounded-sm` (print, not app)
+- Card shadow: visible always → near-zero at rest, dramatic on hover only
+- Card shadow color: accent blue-grey → warm neutral to match parchment background
+- Sentence spacing: `mb-3` → `mb-4`
+- Card title margin: `mb-4` → `mb-5`
+- SubHeader bottom margin: `mb-12` → `mb-16`
+- Page bottom padding: `pb-24` → `pb-36`
+- Background: reverted `#C2CBDA` (blue-grey) → `#EAE3D0` (warm parchment) per David's preference
+
+**Stuck on / had to force:**
+- Background re-iterated again: blue-grey chosen last session for card contrast, reverted this session to warm parchment — David prefers the warmer tone
+- Variant labels were SaaS-generic ("Mira / Investments") — reworked to persona-based with descriptions on David's direction
+
+**Status of all phases:**
+- Phase 0: DONE
+- Phase 1: DONE
+- Phase 2: DONE
+- Phase 3: DONE
+- Phase 4: DONE
+- Phase 5: DONE
+- Phase 6: DONE
+- Phase 7: NOT STARTED — full demo run-through needed
+- Phase 8: NOT STARTED
+
+**Next session priorities:**
+1. Phase 7: Full demo run-through three times; timing tuning; verify accent sentence per card; verify no emojis/icons/slop
+2. Phase 8: Vercel deploy, populate BUILD_SUMMARY.md, tag submission commit
+3. Optional: final design tweaks surfaced during run-through

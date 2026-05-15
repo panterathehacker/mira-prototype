@@ -14,7 +14,8 @@ export default function KeyboardShortcuts() {
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      const t = e.target as HTMLElement;
+      if (t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement || t.isContentEditable) return;
       switch (e.key.toLowerCase()) {
         case "r":
           resetAll();

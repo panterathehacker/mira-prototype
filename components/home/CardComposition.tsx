@@ -49,7 +49,7 @@ export default function CardComposition({
       {sentences.map((sentence, i) => (
         <p
           key={i}
-          className={`font-serif text-body mb-3 sentence ${
+          className={`font-serif text-body mb-4 sentence ${
             sentence.accent ? "text-accent" : "text-ink"
           } ${i < visibleCount ? "sentence-visible" : ""}`}
           style={{

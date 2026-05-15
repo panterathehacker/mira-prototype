@@ -7,7 +7,7 @@ import JournalPanel from "@/components/home/JournalPanel";
 export default function Home() {
   return (
     <>
-      <main className="mx-auto w-full max-w-[720px] px-6 pb-24">
+      <main className="mx-auto w-full max-w-[720px] px-6 pb-36">
         <KeyboardShortcuts />
         <Header />
         <SubHeader />
