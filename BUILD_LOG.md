@@ -203,3 +203,26 @@
 1. Phase 7: Full demo run-through three times; timing tuning; verify accent sentence per card; verify no emojis/icons/slop
 2. Phase 8: Vercel deploy, populate BUILD_SUMMARY.md, tag submission commit
 3. Optional: final design tweaks surfaced during run-through
+
+---
+
+## Session 6 — 2026-05-14
+
+**Worked on:** Phase 8 — Vercel deployment
+
+**Built / done:**
+- Verified clean production build (`npm run build`) — no TypeScript errors, all 4 routes static
+- Installed Vercel CLI (`npm i -g vercel`), authenticated via browser OAuth
+- Deployed to Vercel; GitHub repo connected for auto-deploy on push to `main`
+- Production URL: https://mira-prototype-ten.vercel.app
+- Alias URL: https://mira-prototype-ten.vercel.app
+- README.md updated with live URL
+
+**Status of all phases:**
+- Phase 0–6: DONE
+- Phase 7: NOT STARTED — full demo run-through needed
+- Phase 8: Partially done (deployed; BUILD_SUMMARY.md and submission tag still needed)
+
+**Next session priorities:**
+1. Phase 7: Full demo run-through; timing tuning; verify no slop
+2. Phase 8: Write BUILD_SUMMARY.md, tag `v1.0-submission`

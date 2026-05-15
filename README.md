@@ -73,4 +73,4 @@ Next.js 16 · TypeScript · Tailwind CSS v4 · Framer Motion · Zustand · Sourc
 
 ## Live URL
 
-_To be added after deployment._
+[https://mira-prototype-ten.vercel.app](https://mira-prototype-ten.vercel.app)
